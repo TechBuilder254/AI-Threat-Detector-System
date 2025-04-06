@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Threat Detector System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Canvas for binary rain effect -->
+    <canvas id="binaryCanvas"></canvas>
+
+    <div class="container">
+        <h1>🛡️ AI Threat Detector System</h1>
+        
+        <!-- Display messages -->
+        {% if message %}
+            <div class="message">
+                <p class="{{ 'error' if 'error' in message.lower() else 'success' }}">{{ message }}</p>
+            </div>
+        {% endif %}
+
+        <!-- File upload form -->
+        <form action="{{ url_for('analyze_network') }}" method="POST" enctype="multipart/form-data" class="form-section">
+            <h2>Upload Nmap XML File:</h2>
+            <label for="file">Select an Nmap XML file to analyze:</label>
+            <input type="file" name="nmap_file" required>
+            <button type="submit">Analyze</button>
+        </form>
+
+        <!-- IP range scan form -->
+        <form action="{{ url_for('analyze_network') }}" method="POST" class="form-section">
+            <h2>Or Enter an IP Range for Live Scan:</h2>
+            <label for="ip_range">IP Range (e.g., 192.168.1.0/24):</label>
+            <input type="text" name="ip_range" placeholder="Enter IP range" required>
+            <button type="submit">Scan Now</button>
+        </form>
+
+        <!-- Display results -->
+        {% if anomalies %}
+            <h2>Threat Analysis Results:</h2>
+            <div class="result">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Port</th>
+                            <th>Protocol</th>
+                            <th>State</th>
+                            <th>Service</th>
+                            <th>Threat Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for anomaly in anomalies %}
+                        <tr>
+                            <td>{{ anomaly.ip }}</td>
+                            <td>{{ anomaly.port }}</td>
+                            <td>{{ anomaly.protocol }}</td>
+                            <td>{{ anomaly.state }}</td>
+                            <td>{{ anomaly.service }}</td>
+                            <td class="{{ 'threat' if anomaly.threat == 'Threat' else 'safe' }}">{{ anomaly.threat }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+ <!-- JavaScript for binary rain effect -->
+ <script src="{{ url_for('static', filename='binaryRain.js') }}"></script>
+</body>
+</html>
